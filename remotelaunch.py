@@ -417,7 +417,7 @@ if __name__ == "__main__":
     parser.add_argument("-mdl", "--makeDeployLaunch", action="store_true", help="make, deploy, and launch")
     parser.add_argument("-md", "--makeDeploy", action="store_true", help="make and deploy")
     parser.add_argument("-p", "--printProfiles", action="store_true", help="print a list of available profiles; the default profile is marked by an asterisk")
-    parser.add_argument("directory", default="scripts/remotelaunch/profiles/", nargs="?", help="full path to profiles directory; defaults to '{}'".format(DEFAULT_PROFILE))
+    parser.add_argument("directory", default="remotelaunch/profiles/", nargs="?", help="full path to profiles directory; defaults to '{}'".format(DEFAULT_PROFILE))
     args = parser.parse_args()
 
     SHARED_DIRECTORY = os.path.join(ROOT_DIR, args.directory)
@@ -425,7 +425,6 @@ if __name__ == "__main__":
     SCRIPT_DIRECTORY = os.path.join(ROOT_DIR, args.directory)
     LAUNCH_DIRECTORY = os.path.join(ROOT_DIR, args.directory)
     ENV_SCR_PATH = os.path.join(ROOT_DIR, args.directory, args.profile, "env.sh")
-    print(ENV_SCR_PATH)
     if (args.launch or args.deploylaunch) and args.stop:
         print('\033[91m'+"Do you even know what you want to do?"+'\033[0m')
         sys.exit(1)
