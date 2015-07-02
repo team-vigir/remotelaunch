@@ -63,13 +63,6 @@ SCRIPT_DIRECTORY = os.path.join(ROOT_DIR, "scripts", "remotelaunch/profiles/")
 LAUNCH_DIRECTORY = os.path.join(ROOT_DIR, "scripts", "remotelaunch/profiles/")
 ENV_SCR_PATH = os.path.join(ROOT_DIR, "scripts", "remotelaunch/profiles/")
 RELATIVE_ROOT_PATH = os.path.relpath(ROOT_DIR, os.path.expanduser("~"),)
-ROOT_DIR = os.getenv("VIGIR_ROOT_DIR")
-SHARED_DIRECTORY = os.path.join(ROOT_DIR, "scripts", "remotelaunch/")
-SCRIPT_DIRECTORY = os.path.join(ROOT_DIR, "scripts", "remotelaunch/profiles/")
-LAUNCH_DIRECTORY = os.path.join(ROOT_DIR, "scripts", "remotelaunch/profiles/")
-ENV_SCR_PATH = os.path.join(ROOT_DIR, "scripts", "remotelaunch/profiles/")
-RELATIVE_ROOT_PATH = os.path.relpath(ROOT_DIR, os.path.expanduser("~"),)
-
 #users:
 DEMO = "demo"
 TESTING = "testing"
@@ -82,6 +75,7 @@ SSHUSER = "demo";
 USER_DEFN= False;
 
 DEFAULT_PROFILE = "default"
+DEFAULT_DIRECTORY = "scripts/remotelaunch/profiles"
 
 import subprocess
 import os
@@ -122,10 +116,11 @@ def check_user():
     if USER_DEFN == False:
         SSHUSER = args.user
         profile = args.profile
+        location = args.directory
 
         vig = get_remote_root()
-#        LAUNCH_DIRECTORY = os.path.join(vig, "scripts/remotelaunch/profiles/")
-#        ENV_SCR_PATH = os.path.join(vig, "scripts/remotelaunch/profiles/" + profile + "/env.sh");
+        LAUNCH_DIRECTORY = os.path.join(vig, location)
+        ENV_SCR_PATH = os.path.join(vig, location +"/"+  profile + "/env.sh");
         USER_DEFN = True;
         print("Running with user: " + SSHUSER)
         print("  profile: " + profile)
@@ -137,7 +132,7 @@ def check_user():
 def make_destination():
     """Function to make the testing install in /home/testing/ or /home/demo/. This is the install that will be copied."""
     global SSHUSER
-
+    location = args.directory
     returncode = 0
     """ Make sure the installation is up to date """
     print( "Clean the behaviors system of temp files ..." )
@@ -178,7 +173,10 @@ def make_destination():
     if not os.path.isfile(checkexist):
         print('\033[94m'+'  No repo located at '+VIGIR_REPO+'\033[0m')
         print('\033[92m'+"  Creating new deployment at"+VIGIR_REPO+'\033[0m')
-        returncode = subprocess.call(["/usr/bin/sudo", "./make_destination.sh", SSHUSER, ])
+        if args.directory == DEFAULT_DIRECTORY:
+        	returncode = subprocess.call(["/usr/bin/sudo", "./make_destination.sh", SSHUSER])
+        else:
+        	returncode = subprocess.call(["/usr/bin/sudo", "./make_destination.sh", SSHUSER, location])
         if returncode:
             print("    returncode="+str(returncode))
             return False
@@ -186,7 +184,10 @@ def make_destination():
             return True
     elif os.path.isfile(checkpath):
         print('\033[92m'+"  Updating the existing remote deployment repo at "+VIGIR_REPO+'\033[0m')
-        returncode = subprocess.call(["/usr/bin/sudo", "./make_destination.sh", SSHUSER])
+        if args.directory == DEFAULT_DIRECTORY:
+        	returncode = subprocess.call(["/usr/bin/sudo", "./make_destination.sh", SSHUSER])
+        else:
+        	returncode = subprocess.call(["/usr/bin/sudo", "./make_destination.sh", SSHUSER, location])
         if returncode:
             print("    returncode="+str(returncode))
             return False
@@ -320,7 +321,7 @@ def execute_remote(target, command):
 def execute_remote_in_screen(target, command, suffix=''):
     """Execute a command in a new screen session on a remote host via ssh."""
     ret = execute_remote(target, "screen -dmS remote_launch{} {}".format(suffix, command))
-
+    print(" Executing! {} {}".format(suffix, command))
     if ret:
       if "roscore" in command:
         print("Start roscore and wait for response ...")
@@ -339,7 +340,7 @@ def execute_remote_in_screen(target, command, suffix=''):
 def launch_all(profile):
     """Run all launch scripts on the corresponding remote hosts."""
     ret = True
- #   global LAUNCH_DIRECTORY
+    global LAUNCH_DIRECTORY
     pattern = os.path.join(LAUNCH_DIRECTORY, profile, "[0-9][0-9]_*.sh")
     print(pattern)
     for index, script in enumerate(sorted(glob.glob(pattern))):
@@ -417,15 +418,16 @@ if __name__ == "__main__":
     parser.add_argument("-mdl", "--makeDeployLaunch", action="store_true", help="make, deploy, and launch")
     parser.add_argument("-md", "--makeDeploy", action="store_true", help="make and deploy")
     parser.add_argument("-p", "--printProfiles", action="store_true", help="print a list of available profiles; the default profile is marked by an asterisk")
-    parser.add_argument("directory", default="scripts/remotelaunch/profiles/", nargs="?", help="full path to profiles directory; defaults to '{}'".format(DEFAULT_PROFILE))
+    parser.add_argument("directory", default="scripts/remotelaunch/profiles", nargs="?", help="full path to profiles directory; defaults to '{}'".format(DEFAULT_PROFILE))
     args = parser.parse_args()
+    #global SHARED_DIRECTORY
 
-    SHARED_DIRECTORY = os.path.join(ROOT_DIR, args.directory)
-    (SHARED_DIRECTORY,temp) = os.path.split(SHARED_DIRECTORY)
-    SCRIPT_DIRECTORY = os.path.join(ROOT_DIR, args.directory)
-    LAUNCH_DIRECTORY = os.path.join(ROOT_DIR, args.directory)
-    ENV_SCR_PATH = os.path.join(ROOT_DIR, args.directory, args.profile, "env.sh")
-    print(ENV_SCR_PATH)
+    #print (ROOT_DIR)
+    #SHARED_DIRECTORY = os.path.join(ROOT_DIR, args.directory)
+    #(SHARED_DIRECTORY,temp) = os.path.split(SHARED_DIRECTORY)
+    #SCRIPT_DIRECTORY = os.path.join(ROOT_DIR, args.directory)
+    #LAUNCH_DIRECTORY = os.path.join(ROOT_DIR, args.directory)
+    #ENV_SCR_PATH = os.path.join(ROOT_DIR, args.directory, args.profile, "env.sh")
     if (args.launch or args.deploylaunch) and args.stop:
         print('\033[91m'+"Do you even know what you want to do?"+'\033[0m')
         sys.exit(1)
