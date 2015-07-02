@@ -49,7 +49,9 @@ echo '   Pronto is not built here!'
 fi
 
 echo '   Copying remotelauch files ...'
-cp -r $REMOTE_DIR $REMOTE_DIR 
+echo      $HOME_DIR'/'$REMOTE_DIR' '$DEST_DIR'/'$REMOTE_DIR
+mkdir -p $DEST_DIR/$REMOTE_DIR
+cp -r $HOME_DIR/$REMOTE_DIR $DEST_DIR/$REMOTE_DIR/../
 
 #echo '   copying the libsbpl.so to install/lib ...'
 #cp $HOME_DIR/catkin_ws/src/external/sbpl/build/libsbpl.so $DEST_DIR/catkin_ws/install/lib
