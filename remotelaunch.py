@@ -425,7 +425,7 @@ if __name__ == "__main__":
     parser.add_argument("-mdl", "--makeDeployLaunch", action="store_true", help="make, deploy, and launch")
     parser.add_argument("-md", "--makeDeploy", action="store_true", help="make and deploy")
     parser.add_argument("-p", "--printProfiles", action="store_true", help="print a list of available profiles; the default profile is marked by an asterisk")
-    parser.add_argument("directory", default="scripts/remotelaunch/profiles/", nargs="?", help="full path to profiles directory; defaults to '{}'".format(DEFAULT_PROFILE))
+    parser.add_argument("directory", default="remotelaunch/profiles/", nargs="?", help="path to profiles directory relative to $VIGIR_ROOT_DIR; defaults to '{}'".format(DEFAULT_PROFILE))
     args = parser.parse_args()
     #global SHARED_DIRECTORY
 
