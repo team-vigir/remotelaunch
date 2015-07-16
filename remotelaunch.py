@@ -63,6 +63,13 @@ SCRIPT_DIRECTORY = os.path.join(ROOT_DIR, "scripts", "remotelaunch/profiles/")
 LAUNCH_DIRECTORY = os.path.join(ROOT_DIR, "scripts", "remotelaunch/profiles/")
 ENV_SCR_PATH = os.path.join(ROOT_DIR, "scripts", "remotelaunch/profiles/")
 RELATIVE_ROOT_PATH = os.path.relpath(ROOT_DIR, os.path.expanduser("~"),)
+ROOT_DIR = os.getenv("VIGIR_ROOT_DIR")
+SHARED_DIRECTORY = os.path.join(ROOT_DIR, "scripts", "remotelaunch/")
+SCRIPT_DIRECTORY = os.path.join(ROOT_DIR, "scripts", "remotelaunch/profiles/")
+LAUNCH_DIRECTORY = os.path.join(ROOT_DIR, "scripts", "remotelaunch/profiles/")
+ENV_SCR_PATH = os.path.join(ROOT_DIR, "scripts", "remotelaunch/profiles/")
+RELATIVE_ROOT_PATH = os.path.relpath(ROOT_DIR, os.path.expanduser("~"),)
+
 #users:
 DEMO = "demo"
 TESTING = "testing"
@@ -321,7 +328,7 @@ def execute_remote(target, command):
 def execute_remote_in_screen(target, command, suffix=''):
     """Execute a command in a new screen session on a remote host via ssh."""
     ret = execute_remote(target, "screen -dmS remote_launch{} {}".format(suffix, command))
-    print(" Executing! {} {}".format(suffix, command))
+
     if ret:
       if "roscore" in command:
         print("Start roscore and wait for response ...")
@@ -340,7 +347,7 @@ def execute_remote_in_screen(target, command, suffix=''):
 def launch_all(profile):
     """Run all launch scripts on the corresponding remote hosts."""
     ret = True
-    global LAUNCH_DIRECTORY
+ #   global LAUNCH_DIRECTORY
     pattern = os.path.join(LAUNCH_DIRECTORY, profile, "[0-9][0-9]_*.sh")
     print(pattern)
     for index, script in enumerate(sorted(glob.glob(pattern))):
@@ -418,7 +425,7 @@ if __name__ == "__main__":
     parser.add_argument("-mdl", "--makeDeployLaunch", action="store_true", help="make, deploy, and launch")
     parser.add_argument("-md", "--makeDeploy", action="store_true", help="make and deploy")
     parser.add_argument("-p", "--printProfiles", action="store_true", help="print a list of available profiles; the default profile is marked by an asterisk")
-    parser.add_argument("directory", default="scripts/remotelaunch/profiles", nargs="?", help="full path to profiles directory; defaults to '{}'".format(DEFAULT_PROFILE))
+    parser.add_argument("directory", default="remotelaunch/profiles/", nargs="?", help="path to profiles directory relative to $VIGIR_ROOT_DIR; defaults to '{}'".format(DEFAULT_PROFILE))
     args = parser.parse_args()
     #global SHARED_DIRECTORY
 
