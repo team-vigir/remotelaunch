@@ -136,11 +136,11 @@ def make_destination():
     returncode = 0
     """ Make sure the installation is up to date """
     print( "Clean the behaviors system of temp files ..." )
-    returncode = subprocess.call("rosrun vigir_be_widget clear_cache",shell=True)
-    if returncode:
-        print("Error in executing rosrun vigir_be_widget clear_cache for remote launch!");
-        print("    returncode="+str(returncode))
-        return False
+    #returncode = subprocess.call("rosrun vigir_be_widget clear_cache",shell=True)
+    #if returncode:
+     #   print("Error in executing rosrun vigir_be_widget clear_cache for remote launch!");
+     #   print("    returncode="+str(returncode))
+     #   return False
 
     print( "Delete the install folder to prevent stray behavior temp files ..." )
     RM_INSTALL_DIR  = "rm -rf ~/vigir_repo/catkin_ws/install"
